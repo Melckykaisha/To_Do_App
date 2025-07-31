@@ -1,0 +1,330 @@
+/* Base Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Background image on body */
+body {
+  background-image: url("pic2.jpg"); /* or use full path */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  min-height: 100vh;
+  font-family: Arial, sans-serif;
+  color: white;
+}
+
+/* Optional overlay */
+.overlay {
+  background: rgba(0, 0, 0, 0.6); /* dark overlay for contrast */
+  min-height: 100vh;
+  padding: 2rem;
+}
+
+/* Override background for inner content if needed */
+body.inner-page {
+  background-color: #f5f6fa;
+  color: #2f3542;
+}
+
+/* Header & Navigation */
+header {
+  background-color: #2f3542;
+  color: #fff;
+  padding: 20px 0;
+}
+
+.container.nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1100px;
+  margin: auto;
+  padding: 0 20px;
+}
+
+.logo {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+nav ul {
+  list-style: none;
+  display: flex;
+  gap: 20px;
+}
+
+nav a {
+  color: white;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+nav a:hover {
+  text-decoration: underline;
+}
+
+/* Hero Section */
+.hero {
+  background: #a393bf;
+  color: white;
+  padding: 15px 10px;
+  text-align: center;
+}
+
+.hero h2 {
+  font-size: 2.5rem;
+  margin-bottom: 15px;
+}
+
+.hero p {
+  font-size: 1.2rem;
+  max-width: 600px;
+  margin: auto;
+}
+
+/* Info Sections (About, Contact) */
+.section {
+  padding: 60px 20px;
+  max-width: 800px;
+  margin: auto;
+}
+
+.section h2 {
+  margin-bottom: 20px;
+  font-size: 1.8rem;
+  color: #2f3542;
+}
+
+.section p {
+  font-size: 1rem;
+  color: #555;
+}
+
+/* Form Page */
+.form-page {
+  max-width: 400px;
+  margin: 80px auto;
+  padding: 30px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.form-page h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #2f3542;
+}
+
+.form-page form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.form-page input,
+.form-page button {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.form-page button {
+  background: #1e90ff;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.form-page button:hover {
+  background: #0a74da;
+}
+
+.form-page p {
+  text-align: center;
+  font-size: 14px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  nav ul {
+    flex-direction: column;
+    gap: 10px;
+    align-items: flex-start;
+  }
+
+  .hero h2 {
+    font-size: 2rem;
+  }
+
+  .container.nav {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+}
+
+/* General Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Segoe UI", sans-serif;
+  background-color: #f5f6fa;
+  color: #2f3542;
+  line-height: 1.6;
+}
+
+/* Header */
+header {
+  background-color: #2f3542;
+  color: #fff;
+  padding: 15px 0;
+}
+
+.container.nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1100px;
+  margin: auto;
+  padding: 0 20px;
+}
+
+.logo {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+nav ul {
+  display: flex;
+  gap: 20px;
+  list-style: none;
+}
+
+nav a {
+  color: white;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+nav a:hover {
+  text-decoration: underline;
+}
+
+/* Dashboard Sections */
+.dashboard {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+  padding: 40px 20px;
+  max-width: 1100px;
+  margin: auto;
+}
+
+.tasks,
+.projects,
+.team {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.tasks h2,
+.projects h2,
+.team h2 {
+  margin-bottom: 15px;
+  color: #1e90ff;
+}
+
+/* Tasks List */
+.task-list {
+  list-style: none;
+}
+
+.task-list li {
+  margin-bottom: 10px;
+}
+
+/* Project Boxes */
+.project-box {
+  margin-bottom: 15px;
+  padding: 10px;
+  background-color: #e3f2fd;
+  border-left: 4px solid #1e90ff;
+  border-radius: 4px;
+}
+
+/* Team Section */
+.team ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.team li {
+  margin-bottom: 8px;
+}
+
+/* Task Input Form */
+.task-entry {
+  background: #1e90ff;
+  padding: 20px;
+  text-align: center;
+}
+
+.task-entry form {
+  max-width: 500px;
+  margin: auto;
+  display: flex;
+  gap: 10px;
+}
+
+.task-entry input {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  border-radius: 4px;
+}
+
+.task-entry button {
+  padding: 10px 20px;
+  border: none;
+  background: #fff;
+  color: #1e90ff;
+  font-weight: bold;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.task-entry button:hover {
+  background: #e3f2fd;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .container.nav {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  nav ul {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .dashboard {
+    padding: 20px;
+  }
+
+  .task-entry form {
+    flex-direction: column;
+  }
+}

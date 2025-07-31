@@ -1,0 +1,128 @@
+/* home.css */
+body {
+  margin: 0;
+  font-family: "Segoe UI", sans-serif;
+  background-color: #f4f4f8;
+  color: #333;
+}
+
+.app-container {
+  display: flex;
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: 220px;
+  background-color: #b499d5; /* lilac */
+  color: white;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+}
+
+.sidebar h2.logo {
+  margin-bottom: 30px;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+}
+
+.sidebar li {
+  margin: 15px 0;
+}
+
+.sidebar a {
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.main-content {
+  margin-left: 220px;
+  padding: 40px;
+  flex: 1;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.task-form {
+  background: white;
+  padding: 30px;
+  margin-top: 30px;
+  margin-left: 100px;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+  max-width: 600px;
+}
+
+.task-form input,
+.task-form select,
+.task-form textarea,
+.task-form button {
+  width: 100%;
+  margin: 10px 0;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+}
+
+.task-form button {
+  background-color: #5c4d7d;
+  color: white;
+  border: none;
+  font-weight: bold;
+  transition: background 0.3s ease;
+}
+
+.task-form button:hover {
+  background-color: #493a65;
+}
+
+.task-list {
+  margin-top: 40px;
+}
+
+.task-list ul {
+  list-style: none;
+  padding: 0;
+}
+
+.task-list li {
+  background-color: white;
+  padding: 15px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.05);
+}
+
+.priority-tag {
+  padding: 3px 8px;
+  border-radius: 5px;
+  background-color: #ded2ee;
+  font-size: 0.8rem;
+  text-transform: capitalize;
+}
+
+footer {
+  text-align: center;
+  padding: 15px;
+  background-color: #b499d5;
+  color: white;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+}
