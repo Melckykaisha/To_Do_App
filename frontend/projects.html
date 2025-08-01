@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Projects - FocusFlow</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(to right, #e0c3fc, #8ec5fc);
+      color: #2f3542;
+    }
+
+    .topbar {
+      background: linear-gradient(to right, #c77dff, #9d4edd);
+      color: white;
+      padding: 15px 20px;
+      font-size: 20px;
+      font-weight: 600;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .sidebar {
+      width: 220px;
+      background: #2f3542;
+      height: 100vh;
+      color: white;
+      padding: 20px;
+      float: left;
+    }
+
+    .sidebar .logo {
+      font-size: 24px;
+      margin-bottom: 30px;
+    }
+
+    .sidebar ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .sidebar ul li {
+      margin-bottom: 15px;
+    }
+
+    .sidebar ul li a {
+      color: white;
+      text-decoration: none;
+    }
+
+    .main-content {
+      margin-left: 240px;
+      padding: 30px;
+    }
+
+    .main-content h1 {
+      font-size: 28px;
+      margin-bottom: 20px;
+      color: #7b2cbf;
+    }
+
+    .project-box {
+      background: #fff;
+      padding: 20px;
+      border-left: 5px solid #9d4edd;
+      border-radius: 5px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .project-box h3 {
+      margin: 0 0 10px;
+      color: #333;
+    }
+
+    .project-box p {
+      margin: 0;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">FocusFlow – Projects 💼</div>
+
+  <div class="sidebar">
+    <h2 class="logo">FocusFlow</h2>
+    <nav>
+      <ul>
+        <li><a href="today.html">Today 🏷️</a></li>
+        <li><a href="upcoming.html">Upcoming 🚀</a></li>
+        <li><a href="projects.html">Projects 💼</a></li>
+        <li><a href="calendar.html">Calendar 🗓️</a></li>
+      </ul>
+    </nav>
+  </div>
+
+  <div class="main-content">
+    <h1>Projects Overview</h1>
+
+    <div class="project-box">
+      <h3>FocusFlow Redesign</h3>
+      <p>Status: In Progress – Design new dashboard layout</p>
+    </div>
+
+    <div class="project-box">
+      <h3>Client Research Survey</h3>
+      <p>Status: Completed – Data analysis and reporting done</p>
+    </div>
+
+    <div class="project-box">
+      <h3>Marketing Launch Plan</h3>
+      <p>Status: Pending – Awaiting feedback from manager</p>
+    </div>
+  </div>
+</body>
+</html>

@@ -4,19 +4,21 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>My To-Do App - Home</title>
-    <link rel="stylesheet" href="home.css" />
+    <link rel="stylesheet" href="style.css" />
   </head>
-  <body>
-    <div class="app-container">
+  <body class="home-page">
+   <div class="app-container">
+    <div class="topbar"><strong>To Do App ✍️</strong></div>
+
+    <div class="page-content">
       <!-- Sidebar -->
       <aside class="sidebar">
-        <h2 class="logo">ToDoApp</h2>
         <nav>
           <ul>
-            <li><a href="#">Today</a></li>
-            <li><a href="#">Upcoming</a></li>
-            <li><a href="#">Projects</a></li>
-            <li><a href="#">Calendar</a></li>
+            <li><a href="today.html">Today 🏷️</a></li>
+           <li><a href="upcoming.html">Upcoming 🚀</a></li>
+           <li><a href="projects.html">Projects 💼</a></li>
+           <li><a href="calendar.html">Calendar 🗓️</a></li>
           </ul>
         </nav>
       </aside>
@@ -50,17 +52,15 @@
         <section class="task-list">
           <h2>Your Tasks</h2>
           <ul>
-            <!-- Example Task -->
             <li>
               <input type="checkbox" />
               <span>shopping</span>
               <span class="priority-tag">low</span>
               <span class="due-date">2025-08-01</span>
             </li>
-            <!-- More tasks will be dynamically listed here -->
           </ul>
         </section>
       </main>
     </div>
-  </body>
-</html>
+  </div>
+</body>

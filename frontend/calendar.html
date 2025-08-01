@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Calendar - FocusFlow</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: #f5f6fa;
+      color: #2f3542;
+    }
+
+    .topbar {
+      background: linear-gradient(to right, #a18cd1, #fbc2eb);
+      color: white;
+      padding: 15px 20px;
+      font-size: 20px;
+      font-weight: 600;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .sidebar {
+      width: 220px;
+      background: #2f3542;
+      height: 100vh;
+      color: white;
+      padding: 20px;
+      float: left;
+    }
+
+    .sidebar .logo {
+      font-size: 24px;
+      margin-bottom: 30px;
+    }
+
+    .sidebar ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .sidebar ul li {
+      margin-bottom: 15px;
+    }
+
+    .sidebar ul li a {
+      color: white;
+      text-decoration: none;
+    }
+
+    .main-content {
+      margin-left: 240px;
+      padding: 30px;
+    }
+
+    .main-content h1 {
+      font-size: 28px;
+      margin-bottom: 20px;
+      color: #7b2cbf;
+    }
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 10px;
+    }
+
+    .day {
+      background: white;
+      padding: 20px;
+      border-radius: 6px;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .day.today {
+      border: 2px solid #9d4edd;
+      font-weight: bold;
+      background: #f3e8ff;
+    }
+
+    .day span {
+      display: block;
+      font-size: 14px;
+      color: #555;
+      margin-top: 8px;
+    }
+
+    @media (max-width: 768px) {
+      .calendar-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      .main-content {
+        margin-left: 0;
+        padding: 20px;
+      }
+
+      .sidebar {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">FocusFlow – Calendar 🗓️</div>
+
+  <div class="sidebar">
+    <h2 class="logo">FocusFlow</h2>
+    <nav>
+      <ul>
+        <li><a href="today.html">Today 🏷️</a></li>
+        <li><a href="upcoming.html">Upcoming 🚀</a></li>
+        <li><a href="projects.html">Projects 💼</a></li>
+        <li><a href="calendar.html">Calendar 🗓️</a></li>
+      </ul>
+    </nav>
+  </div>
+
+  <div class="main-content">
+    <h1>My Monthly Calendar</h1>
+    <div class="calendar-grid">
+      <div class="day">Sun <span>28</span></div>
+      <div class="day">Mon <span>29</span></div>
+      <div class="day today">Tue <span>30</span></div>
+      <div class="day">Wed <span>31</span></div>
+      <div class="day">Thu <span>1</span></div>
+      <div class="day">Fri <span>2</span></div>
+      <div class="day">Sat <span>3</span></div>
+      <!-- Add more days as needed -->
+    </div>
+  </div>
+</body>
+</html>
