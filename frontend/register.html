@@ -1,21 +1,310 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Register - FocusFlow</title>
-    <link rel="stylesheet" href="style.css" />
-  </head>
-  <body>
-    <div class="form-page">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Register - FocusFlow</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    /* 🔔 Notification Banner */
+    .notification {
+      position: fixed;
+      top: -60px;
+      left: 50%;
+      transform: translateX(-50%);
+      min-width: 320px;
+      max-width: 500px;
+      padding: 15px 20px;
+      border-radius: 10px;
+      text-align: center;
+      font-weight: 500;
+      font-size: 15px;
+      transition: top 0.5s ease;
+      z-index: 1000;
+    }
+
+    .notification.show {
+      top: 20px;
+    }
+
+    .notification.success {
+      background: #e9f9ee;
+      color: #2d7a32;
+      border: 1px solid #2d7a32;
+    }
+
+    .notification.error {
+      background: #fdecea;
+      color: #a82b2b;
+      border: 1px solid #a82b2b;
+    }
+
+    .form-container {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 450px;
+      overflow: hidden;
+    }
+
+    .form-header {
+      background: linear-gradient(90deg, #c77dff 0%, #9d4edd 100%);
+      color: white;
+      padding: 25px;
+      text-align: center;
+    }
+
+    .form-header h2 {
+      font-weight: 600;
+      font-size: 24px;
+      margin-bottom: 5px;
+    }
+
+    .form-header p {
+      font-size: 14px;
+      opacity: 0.9;
+    }
+
+    .form-body {
+      padding: 30px;
+    }
+
+    .input-group {
+      margin-bottom: 20px;
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-group i.fas.fa-lock {
+      position: absolute;
+      left: 15px;
+      color: #9d4edd;
+      font-size: 18px;
+    }
+
+    .input-group i.fas.fa-user-circle {
+      position: absolute;
+      left: 15px;
+      color: #9d4edd;
+      font-size: 18px;
+    }
+
+    .input-group i.fas.fa-user {
+      position: absolute;
+      left: 15px;
+      color: #9d4edd;
+      font-size: 18px;
+    }
+
+    .input-group i.fas.fa-envelope {
+      position: absolute;
+      left: 15px;
+      color: #9d4edd;
+      font-size: 18px;
+    }
+
+    .input-group input {
+      width: 100%;
+      padding: 12px 45px 12px 45px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: 16px;
+      transition: all 0.3s ease;
+      color: #2f3542;
+    }
+
+    .input-group input:focus {
+      border-color: #9d4edd;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(157, 78, 221, 0.2);
+    }
+
+    .btn-register {
+      background: linear-gradient(90deg, #c77dff 0%, #9d4edd 100%);
+      color: white;
+      border: none;
+      padding: 14px;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(157, 78, 221, 0.3);
+    }
+
+    .btn-register:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(157, 78, 221, 0.4);
+    }
+
+    .form-footer {
+      text-align: center;
+      margin-top: 20px;
+      color: #2f3542;
+      font-size: 14px;
+    }
+
+    .form-footer a {
+      color: #9d4edd;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .form-footer a:hover {
+      text-decoration: underline;
+    }
+
+    .password-toggle {
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #9d4edd;
+      cursor: pointer;
+      font-size: 18px;
+      line-height: 1;
+    }
+
+    @media (max-width: 480px) {
+      .form-container {
+        border-radius: 15px;
+      }
+
+      .form-header {
+        padding: 20px;
+      }
+
+      .form-body {
+        padding: 25px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- 🔔 Notification Banner -->
+  <div id="notification" class="notification"></div>
+
+  <div class="form-container">
+    <div class="form-header">
       <h2>Create Your FocusFlow Account</h2>
-      <form>
-        <input type="text" placeholder="Full Name" required />
-        <input type="email" placeholder="Email" required />
-        <input type="text" placeholder="Username" required />
-        <input type="password" placeholder="Password" required />
-        <button type="submit">Register</button>
-        <p>Already have an account? <a href="login.html">Login here</a></p>
+      <p>Join thousands of productive people</p>
+    </div>
+
+    <div class="form-body">
+      <form id="registerForm">
+        <div class="input-group">
+          <i class="fas fa-user"></i>
+          <input type="text" id="fullname" placeholder="Full Name" required />
+        </div>
+
+        <div class="input-group">
+          <i class="fas fa-envelope"></i>
+          <input type="email" id="email" placeholder="Email" required />
+        </div>
+
+        <div class="input-group">
+          <i class="fas fa-user-circle"></i>
+          <input type="text" id="username" placeholder="Username" required />
+        </div>
+
+        <div class="input-group">
+          <i class="fas fa-lock"></i>
+          <input type="password" id="password" placeholder="Password" required />
+          <span class="password-toggle" id="passwordToggle">
+            <i class="fas fa-eye"></i>
+          </span>
+        </div>
+
+        <button type="submit" class="btn-register">Register</button>
+
+        <div class="form-footer">
+          <p>Already have an account? <a href="login.html">Login here</a></p>
+        </div>
       </form>
     </div>
-  </body>
+  </div>
+
+  <script>
+    // Password toggle
+    const passwordToggle = document.getElementById('passwordToggle');
+    const passwordInput = document.getElementById('password');
+
+    passwordToggle.addEventListener('click', function () {
+      const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+      passwordInput.setAttribute('type', type);
+      this.querySelector('i').classList.toggle('fa-eye');
+      this.querySelector('i').classList.toggle('fa-eye-slash');
+    });
+
+    // Notification function
+    const notification = document.getElementById("notification");
+    function showNotification(message, type = "success") {
+      notification.textContent = message;
+      notification.className = "notification show " + type;
+
+      setTimeout(() => {
+        notification.classList.remove("show");
+      }, 3000);
+    }
+
+    // Form submit
+    const registerForm = document.getElementById('registerForm');
+    registerForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const fullName = document.getElementById('fullname').value;
+      const email = document.getElementById('email').value;
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+
+      try {
+        const response = await fetch("http://localhost:3000/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ fullName, email, username, password }),
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+          showNotification("✅ Registration successful! Redirecting...", "success");
+          setTimeout(() => {
+            window.location.href = "login.html";
+          }, 2000);
+        } else {
+          showNotification("❌ " + (data.error || "Registration failed"), "error");
+        }
+      } catch (error) {
+        console.error("Error:", error);
+        showNotification("⚠️ Something went wrong. Try again later.", "error");
+      }
+    });
+  </script>
+</body>
+
 </html>

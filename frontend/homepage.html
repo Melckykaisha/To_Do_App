@@ -1,13 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>My To-Do App - Home</title>
-    <link rel="stylesheet" href="style.css" />
-  </head>
-  <body class="home-page">
-   <div class="app-container">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My To-Do App - Home</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body class="home-page">
+  <div class="app-container">
     <div class="topbar"><strong>To Do App ✍️</strong></div>
 
     <div class="page-content">
@@ -16,11 +18,19 @@
         <nav>
           <ul>
             <li><a href="today.html">Today 🏷️</a></li>
-           <li><a href="upcoming.html">Upcoming 🚀</a></li>
-           <li><a href="projects.html">Projects 💼</a></li>
-           <li><a href="calendar.html">Calendar 🗓️</a></li>
+            <li><a href="upcoming.html">Upcoming 🚀</a></li>
+            <li><a href="calendar.html">Calendar 🗓️</a></li>
           </ul>
         </nav>
+        <button onclick="logout()">Logout</button>
+
+        <script>
+          function logout() {
+            localStorage.removeItem("token");
+            window.location.href = "login.html";
+          }
+        </script>
+
       </aside>
 
       <!-- Main Content -->
@@ -32,35 +42,174 @@
           </div>
         </header>
 
+        <!-- Feedback Messages -->
+        <div id="message" class="message"></div>
+
         <!-- Task Form -->
         <section class="task-form">
-          <form>
-            <input type="text" placeholder="What do you need to do?" required />
-            <input type="date" title="Due date" />
-            <select name="priority">
+          <form id="taskForm">
+            <input type="text" id="title" placeholder="What do you need to do?" required />
+            <input type="date" id="dueDate" title="Due date" />
+            <select id="priority">
+              <option value="" disabled selected>Choose priority</option>
               <option value="low">Low</option>
               <option value="medium">Medium</option>
               <option value="high">High</option>
             </select>
-            <textarea placeholder="Add a note..."></textarea>
-            <input type="file" name="attachment" />
+            <textarea id="note" placeholder="Add a note..."></textarea>
             <button type="submit">Add Task</button>
           </form>
+          <div id="formMessage"></div>
         </section>
 
         <!-- Task List -->
         <section class="task-list">
           <h2>Your Tasks</h2>
-          <ul>
-            <li>
-              <input type="checkbox" />
-              <span>shopping</span>
-              <span class="priority-tag">low</span>
-              <span class="due-date">2025-08-01</span>
-            </li>
-          </ul>
+          <div id="taskCards" class="task-cards"></div>
         </section>
       </main>
     </div>
   </div>
+
+  <script>
+    async function checkAuth() {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        window.location.href = "login.html";
+        return;
+      }
+
+      try {
+        const res = await fetch("http://localhost:3000/protected", {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+
+        if (!res.ok) {
+          // invalid/expired token
+          localStorage.removeItem("token");
+          window.location.href = "login.html";
+        }
+      } catch (err) {
+        console.error("Auth check failed", err);
+        window.location.href = "login.html";
+      }
+    }
+
+    checkAuth();
+
+
+    const API_URL = "http://localhost:3000/tasks";
+    const messageBox = document.getElementById("message");
+    const taskCards = document.getElementById("taskCards");
+
+    function showMessage(text, type = "success") {
+      messageBox.textContent = text;
+      messageBox.style.color = type === "success" ? "green" : "red";
+      setTimeout(() => (messageBox.textContent = ""), 3000);
+    }
+
+    // Fetch tasks
+    async function fetchTasks() {
+      try {
+        const res = await fetch(API_URL);
+        const tasks = await res.json();
+        taskCards.innerHTML = "";
+
+        tasks.forEach((task) => {
+          const card = document.createElement("div");
+          card.className = `task-card ${task.done ? "done" : ""}`;
+
+          card.innerHTML = `
+          <div class="task-header">
+            <h3>${task.title}</h3>
+            <span class="priority ${task.priority}">${task.priority || "low"}</span>
+          </div>
+          <p class="task-note">${task.note || ""}</p>
+          <div class="task-footer">
+            <span class="due-date">📅 ${task.dueDate || "No date"}</span>
+            <div class="actions">
+              <button class="done-btn" data-id="${task.id}" data-done="${task.done}">
+                ${task.done ? "✅ Done" : "☑️ Mark Done"}
+              </button>
+              <button class="delete-btn" data-id="${task.id}">🗑️ Delete</button>
+            </div>
+          </div>
+        `;
+          taskCards.appendChild(card);
+        });
+
+        // Toggle Done
+        document.querySelectorAll(".done-btn").forEach((btn) => {
+          btn.addEventListener("click", async (e) => {
+            const id = e.target.dataset.id;
+            const currentDone = e.target.dataset.done === "true"; // check current state
+
+            await fetch(`${API_URL}/${id}`, {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ done: !currentDone }), // toggle value
+            });
+
+            showMessage(!currentDone ? "Task marked as done ✅" : "Task marked as not done ❌");
+            fetchTasks();
+          });
+        });
+
+        // Delete Task
+        document.querySelectorAll(".delete-btn").forEach((btn) => {
+          btn.addEventListener("click", async (e) => {
+            const id = e.target.dataset.id;
+            await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+            showMessage("Task deleted 🗑️");
+            fetchTasks();
+          });
+        });
+      } catch (err) {
+        showMessage("Error loading tasks ❌", "error");
+      }
+    }
+
+    // Add task
+    document.getElementById("taskForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const messageBox = document.getElementById("formMessage");
+
+      const newTask = {
+        title: document.getElementById("title").value,
+        dueDate: document.getElementById("dueDate").value,
+        priority: document.getElementById("priority").value,
+        note: document.getElementById("note").value,
+        done: false,
+      };
+
+      try {
+        const res = await fetch(API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(newTask),
+        });
+
+        if (!res.ok) throw new Error("Failed to add task");
+
+        messageBox.textContent = "✅ Task added successfully!";
+        messageBox.className = "success";
+        e.target.reset();
+        fetchTasks();
+      } catch (err) {
+        messageBox.textContent = "❌ Error adding task. Please try again.";
+        messageBox.className = "error";
+      }
+
+      setTimeout(() => {
+        messageBox.textContent = "";
+        messageBox.className = "";
+      }, 3000);
+    });
+
+    // Load on page start
+    fetchTasks();
+  </script>
+
 </body>
+
+</html>

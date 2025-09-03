@@ -1,23 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Today - FocusFlow</title>
   <link rel="stylesheet" href="style.css" />
 </head>
+
 <body class="today-page">
   <div class="topbar">FocusFlow – Today 🏷️</div>
 
   <div class="page-content">
     <div class="sidebar">
-      <h2 class="logo">FocusFlow</h2>
       <nav>
         <ul>
-          <li><a href="today.html">Today 🏷️</a></li>
-          <li><a href="upcoming.html">Upcoming 🚀</a></li>
-          <li><a href="projects.html">Projects 💼</a></li>
-          <li><a href="calendar.html">Calendar 🗓️</a></li>
+          <li><a href="homepage.html">🏠 Homepage</a></li>
+          <li><a href="today.html" class="active">🏷️Today </a></li>
+          <li><a href="upcoming.html">🚀Upcoming </a></li>
+          <li><a href="calendar.html">🗓️Calendar </a></li>
         </ul>
       </nav>
     </div>
@@ -25,8 +26,86 @@
     <div class="main-content">
       <h1>Today's Tasks</h1>
       <p>View and manage your tasks for today.</p>
-      <!-- Placeholder for tasks -->
+
+      <!-- New Task Form -->
+      <form id="new-task-form">
+        <input id="task-input" type="text" placeholder="New task..." required />
+        <select id="priority-input">
+          <option value="Low">Low </option>
+          <option value="Medium" selected>Medium </option>
+          <option value="High">High </option>
+        </select>
+        <button type="submit">Add Task</button>
+      </form>
+
+      <!-- Task List -->
+      <div id="task-list"></div>
     </div>
   </div>
+
+  <!-- Connect frontend to backend API -->
+  <script type="module">
+    import { getTasks, addTask, updateTask, deleteTask } from "./api.js";
+
+    // Get today's date in YYYY-MM-DD format
+    function getToday() {
+      return new Date().toISOString().split("T")[0];
+    }
+
+    async function loadTasks() {
+      const tasks = await getTasks(true);
+      const today = getToday();
+      const container = document.getElementById("task-list");
+      container.innerHTML = "";
+
+      // ✅ Only show tasks with today's dueDate
+      const todaysTasks = tasks.filter(t => t.dueDate === today);
+
+      if (todaysTasks.length === 0) {
+        container.innerHTML = "<p>No tasks for today 🎉</p>";
+        return;
+      }
+
+      todaysTasks.forEach(task => {
+        const div = document.createElement("div");
+        div.className = "task-box";
+        div.innerHTML = `
+          <h3>${task.title}</h3>
+          <p>Status: ${task.done ? "✅ Done" : "❌ Pending"}</p>
+          <button onclick="markDone('${task.id}')">Mark Done</button>
+          <button onclick="removeTask('${task.id}')">Delete</button>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    window.markDone = async (id) => {
+      await updateTask(id, { done: true });
+      loadTasks();
+    };
+
+    window.removeTask = async (id) => {
+      await deleteTask(id);
+      loadTasks();
+    };
+
+    // Add new task
+    document.getElementById("new-task-form").onsubmit = async (e) => {
+      e.preventDefault();
+      const title = document.getElementById("task-input").value;
+      const priority = document.getElementById("priority-input").value;
+
+      if (title) {
+        await addTask(title, null, priority); // 👈 pass priority
+        document.getElementById("task-input").value = "";
+        document.getElementById("priority-input").value = "Medium"; // reset
+        loadTasks();
+      }
+    };
+
+    // Load tasks on page start
+    loadTasks();
+  </script>
 </body>
+
 </html>

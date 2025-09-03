@@ -1,39 +1,111 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Upcoming - FocusFlow</title>
   <link rel="stylesheet" href="style.css" />
 </head>
-<body class="upcoming-page">
-  <div class="topbar">FocusFlow – Upcoming 🚀</div>
+</head>
 
-  <div class="sidebar">
-    <h2 class="logo">FocusFlow</h2>
-    <nav>
-      <ul>
-        <li><a href="today.html">Today 🏷️</a></li>
-        <li><a href="upcoming.html">Upcoming 🚀</a></li>
-        <li><a href="projects.html">Projects 💼</a></li>
-        <li><a href="calendar.html">Calendar 🗓️</a></li>
-      </ul>
-    </nav>
+<body class="today-page">
+  <!-- Top Bar -->
+  <div class="topbar">
+    Upcoming 🚀
   </div>
 
-  <div class="main-content">
-    <h1>Upcoming Tasks</h1>
-    <p>Here are your upcoming tasks:</p>
-
-    <div class="task-card">
-      <h3>Finish group report</h3>
-      <div class="due-date">Due: 2025-08-03</div>
+  <div class="page-content">
+    <div class="sidebar">
+      <nav>
+        <ul>
+          <li><a href="homepage.html">🏠 Homepage</a></li>
+          <li><a href="today.html">🏷️ Today</a></li>
+          <li><a href="upcoming.html" class="active">🚀 Upcoming</a></li>
+          <li><a href="calendar.html">🗓️ Calendar</a></li>
+        </ul>
+      </nav>
     </div>
 
-    <div class="task-card">
-      <h3>Prepare presentation slides</h3>
-      <div class="due-date">Due: 2025-08-05</div>
+    <div class="main-content">
+      <div id="message" class="message-box"></div>
+      <h2>Upcoming Tasks</h2>
+      <div id="upcoming-tasks" class="upcoming-tasks"></div>
     </div>
   </div>
+
+  <script>
+    const API_URL = "http://localhost:3000/tasks";
+
+    function showMessage(text, type = "success") {
+      const messageBox = document.getElementById("message");
+      messageBox.textContent = text;
+      messageBox.style.color = type === "success" ? "green" : "red";
+      setTimeout(() => (messageBox.textContent = ""), 3000);
+    }
+
+    async function fetchUpcomingTasks() {
+      try {
+        const res = await fetch(API_URL);
+        const tasks = await res.json();
+        const container = document.querySelector(".upcoming-tasks");
+        container.innerHTML = "";
+
+        const today = new Date().toISOString().split("T")[0]; // yyyy-mm-dd
+        const upcoming = tasks.filter(task => task.dueDate && task.dueDate > today);
+
+        if (upcoming.length === 0) {
+          container.innerHTML = "<p>No upcoming tasks 🚫</p>";
+          return;
+        }
+
+        upcoming.forEach(task => {
+          const card = document.createElement("div");
+          card.className = `task-card ${task.priority || "low"}`;
+          card.innerHTML = `
+          <input type="checkbox" ${task.done ? "checked" : ""} data-id="${task.id}" />
+          <h3>${task.title}</h3>
+          <div class="due-date">Due: ${task.dueDate}</div>
+          <span class="priority-tag">${task.priority || "low"}</span>
+          <button class="delete-btn" data-id="${task.id}">Delete</button>
+        `;
+          container.appendChild(card);
+        });
+
+        // ✅ Mark as done toggle
+        document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+          cb.addEventListener("change", async (e) => {
+            const id = e.target.dataset.id;
+            await fetch(`${API_URL}/${id}`, {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ done: e.target.checked }),
+            });
+            showMessage("Task updated ✅");
+            fetchUpcomingTasks();
+          });
+        });
+
+        // 🗑️ Delete button
+        document.querySelectorAll(".delete-btn").forEach(btn => {
+          btn.addEventListener("click", async (e) => {
+            const id = e.target.dataset.id;
+            await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+            showMessage("Task deleted 🗑️");
+            fetchUpcomingTasks();
+          });
+        });
+
+      } catch (err) {
+        console.error("Error loading upcoming tasks ❌", err);
+        showMessage("Error loading tasks ❌", "error");
+      }
+    }
+
+    // 🚀 Load upcoming tasks on page load
+    fetchUpcomingTasks();
+  </script>
+
 </body>
+
 </html>

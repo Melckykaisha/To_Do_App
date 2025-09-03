@@ -1,19 +1,314 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Login - FocusFlow</title>
-    <link rel="stylesheet" href="style.css" />
-  </head>
-  <body>
-    <div class="form-page">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login - FocusFlow</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .form-container {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 450px;
+      overflow: hidden;
+    }
+
+    .form-header {
+      background: linear-gradient(90deg, #c77dff 0%, #9d4edd 100%);
+      color: white;
+      padding: 25px;
+      text-align: center;
+    }
+
+    .form-header h2 {
+      font-weight: 600;
+      font-size: 24px;
+      margin-bottom: 5px;
+    }
+
+    .form-header p {
+      font-size: 14px;
+      opacity: 0.9;
+    }
+
+    .form-body {
+      padding: 30px;
+    }
+
+    .input-group {
+      margin-bottom: 20px;
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-group i.fas.fa-lock {
+      position: absolute;
+      left: 15px;
+      color: #9d4edd;
+      font-size: 18px;
+    }
+
+    .input-group i.fas.fa-user {
+      position: absolute;
+      left: 15px;
+      color: #9d4edd;
+      font-size: 18px;
+    }
+
+
+    .input-group input {
+      width: 100%;
+      padding: 12px 15px 12px 45px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: 16px;
+      transition: all 0.3s ease;
+      color: #2f3542;
+    }
+
+    .input-group input:focus {
+      border-color: #9d4edd;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(157, 78, 221, 0.2);
+    }
+
+    .remember-forgot {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      font-size: 14px;
+    }
+
+    .remember {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #2f3542;
+    }
+
+    .remember input {
+      accent-color: #9d4edd;
+    }
+
+    .forgot-password {
+      color: #9d4edd;
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .forgot-password:hover {
+      text-decoration: underline;
+    }
+
+    .btn-login {
+      background: linear-gradient(90deg, #c77dff 0%, #9d4edd 100%);
+      color: white;
+      border: none;
+      padding: 14px;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(157, 78, 221, 0.3);
+      margin-bottom: 20px;
+    }
+
+    .btn-login:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(157, 78, 221, 0.4);
+    }
+
+    .form-footer {
+      text-align: center;
+      color: #2f3542;
+      font-size: 14px;
+    }
+
+    .form-footer a {
+      color: #9d4edd;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .form-footer a:hover {
+      text-decoration: underline;
+    }
+
+    .password-input-container {
+      position: relative;
+    }
+
+    .password-toggle {
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #9d4edd;
+      cursor: pointer;
+      z-index: 2;
+    }
+
+    .message {
+      text-align: center;
+      margin-bottom: 15px;
+      font-size: 14px;
+      display: none;
+      padding: 10px;
+      border-radius: 8px;
+    }
+
+    .message.success {
+      color: #155724;
+      background: #d4edda;
+    }
+
+    .message.error {
+      color: #721c24;
+      background: #f8d7da;
+    }
+
+    @media (max-width: 480px) {
+      .form-container {
+        border-radius: 15px;
+      }
+
+      .form-header {
+        padding: 20px;
+      }
+
+      .form-body {
+        padding: 25px;
+      }
+
+      .remember-forgot {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="form-container">
+    <div class="form-header">
       <h2>Login to FocusFlow</h2>
-      <form>
-        <input type="text" placeholder="Username" required />
-        <input type="password" placeholder="Password" required />
-        <button type="submit">Login</button>
-        <p>Don't have an account? <a href="register.html">Register here</a></p>
+      <p>Welcome back to your productivity journey</p>
+    </div>
+
+    <div class="form-body">
+      <div id="message" class="message"></div>
+      <form id="loginForm">
+        <div class="input-group">
+          <i class="fas fa-user"></i>
+          <input type="text" id="username" placeholder="Username" required />
+        </div>
+
+        <div class="input-group password-input-container">
+          <i class="fas fa-lock"></i>
+          <input type="password" id="password" placeholder="Password" required />
+          <span class="password-toggle" id="passwordToggle">
+            <i class="fas fa-eye"></i>
+          </span>
+        </div>
+
+        <div class="remember-forgot">
+          <label class="remember">
+            <input type="checkbox" id="remember">
+            <span>Remember me</span>
+          </label>
+          <a href="#" class="forgot-password">Forgot password?</a>
+        </div>
+
+        <button type="submit" class="btn-login">Login</button>
+
+        <div class="form-footer">
+          <p>Don't have an account? <a href="register.html">Register here</a></p>
+        </div>
       </form>
     </div>
-  </body>
+  </div>
+
+  <script>
+    // Password toggle functionality
+    const passwordToggle = document.getElementById('passwordToggle');
+    const passwordInput = document.getElementById('password');
+
+    passwordToggle.addEventListener('click', function () {
+      const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+      passwordInput.setAttribute('type', type);
+      const icon = this.querySelector('i');
+      icon.classList.toggle('fa-eye');
+      icon.classList.toggle('fa-eye-slash');
+    });
+
+    // Handle login
+    const form = document.getElementById('loginForm');
+    const messageBox = document.getElementById('message');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value.trim();
+
+      try {
+        const res = await fetch('http://localhost:3000/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+        const data = await res.json();
+
+        messageBox.style.display = 'block';
+        if (res.ok) {
+          // Save token
+          localStorage.setItem('token', data.token);
+
+          messageBox.textContent = '✅ Login successful! Redirecting...';
+          messageBox.className = 'message success';
+          setTimeout(() => {
+            window.location.href = 'homepage.html';
+          }, 1500);
+        }
+        else {
+          messageBox.textContent = data.error || '❌ Login failed';
+          messageBox.className = 'message error';
+        }
+      } catch (err) {
+        messageBox.style.display = 'block';
+        messageBox.textContent = '⚠️ Server error, please try again.';
+        messageBox.className = 'message error';
+      }
+    });
+  </script>
+</body>
+
 </html>
