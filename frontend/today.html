@@ -6,6 +6,27 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Today - FocusFlow</title>
   <link rel="stylesheet" href="style.css" />
+  <style>
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 100%;
+    }
+    .logout-btn {
+      margin: 1rem;
+      padding: 0.5rem 1rem;
+      background: #e74c3c;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      align-self: flex-start;
+    }
+    .logout-btn:hover {
+      background: #c0392b;
+    }
+  </style>
 </head>
 
 <body class="today-page">
@@ -13,14 +34,17 @@
 
   <div class="page-content">
     <div class="sidebar">
-      <nav>
-        <ul>
-          <li><a href="homepage.html">🏠 Homepage</a></li>
-          <li><a href="today.html" class="active">🏷️Today </a></li>
-          <li><a href="upcoming.html">🚀Upcoming </a></li>
-          <li><a href="calendar.html">🗓️Calendar </a></li>
-        </ul>
-      </nav>
+      <div>
+        <nav>
+          <ul>
+            <li><a href="homepage.html">🏠 Homepage</a></li>
+            <li><a href="today.html" class="active">🏷️Today </a></li>
+            <li><a href="upcoming.html">🚀Upcoming </a></li>
+            <li><a href="calendar.html">🗓️Calendar </a></li>
+          </ul>
+        </nav>
+      </div>
+      <button class="logout-btn" onclick="logout()">Logout</button>
     </div>
 
     <div class="main-content">
@@ -46,6 +70,11 @@
   <!-- Connect frontend to backend API -->
   <script type="module">
     import { getTasks, addTask, updateTask, deleteTask } from "./api.js";
+
+    function logout() {
+      localStorage.removeItem("token");
+      window.location.href = "login.html";
+    }
 
     // Get today's date in YYYY-MM-DD format
     function getToday() {

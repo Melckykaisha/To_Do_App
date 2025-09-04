@@ -1,13 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>My To-Do App - Home</title>
   <link rel="stylesheet" href="style.css" />
+  <style>
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .sidebar button {
+      margin-top: auto;
+      background: #d3bdf0;
+      border: none;
+      padding: 10px;
+      cursor: pointer;
+      border-radius: 6px;
+    }
+    .greeting {
+      font-size: 1.4rem;
+      color: #000000;
+      margin-bottom: 10px;
+    }
+    .username-box {
+      font-size: 1.5rem;
+      color: #444;
+      animation: fadeIn 3s ease-in-out infinite alternate;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0.4; }
+      to { opacity: 1; }
+    }
+  </style>
 </head>
-
 <body class="home-page">
   <div class="app-container">
     <div class="topbar"><strong>To Do App ✍️</strong></div>
@@ -23,23 +50,13 @@
           </ul>
         </nav>
         <button onclick="logout()">Logout</button>
-
-        <script>
-          function logout() {
-            localStorage.removeItem("token");
-            window.location.href = "login.html";
-          }
-        </script>
-
       </aside>
 
       <!-- Main Content -->
       <main class="main-content">
         <header class="header">
-          <h1>Welcome back!</h1>
-          <div class="profile">
-            <span class="username">Username</span>
-          </div>
+          <div class="greeting" id="greetingText"></div>
+          <div class="username-box" id="username"></div>
         </header>
 
         <!-- Feedback Messages -->
@@ -64,7 +81,7 @@
 
         <!-- Task List -->
         <section class="task-list">
-          <h2>Your Tasks</h2>
+          <h3>Your Tasks</h3>
           <div id="taskCards" class="task-cards"></div>
         </section>
       </main>
@@ -72,69 +89,82 @@
   </div>
 
   <script>
+    const API_URL = "http://localhost:3000/tasks";
+    const token = localStorage.getItem("token");
+    const messageBox = document.getElementById("message");
+    const taskCards = document.getElementById("taskCards");
+    const usernameSpan = document.getElementById("username");
+    const greetingText = document.getElementById("greetingText");
+
+    // ✅ Logout
+    function logout() {
+      localStorage.removeItem("token");
+      window.location.href = "login.html";
+    }
+
+    // ✅ Auth check + Greeting
     async function checkAuth() {
-      const token = localStorage.getItem('token');
       if (!token) {
         window.location.href = "login.html";
         return;
       }
-
       try {
-        const res = await fetch("http://localhost:3000/protected", {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        const payload = JSON.parse(atob(token.split(".")[1]));
+        usernameSpan.textContent = payload.username || "User";
 
-        if (!res.ok) {
-          // invalid/expired token
-          localStorage.removeItem("token");
-          window.location.href = "login.html";
-        }
-      } catch (err) {
-        console.error("Auth check failed", err);
-        window.location.href = "login.html";
+        // Greeting logic
+        const hours = new Date().getHours();
+        let greet = "Hello";
+        if (hours < 12) greet = "Good Morning 👋";
+        else if (hours < 18) greet = "Good Afternoon 👋";
+        else greet = "Good Evening 👋";
+
+        greetingText.textContent = greet;
+      } catch {
+        logout();
       }
     }
 
     checkAuth();
 
-
-    const API_URL = "http://localhost:3000/tasks";
-    const messageBox = document.getElementById("message");
-    const taskCards = document.getElementById("taskCards");
-
+    // ✅ Show feedback messages
     function showMessage(text, type = "success") {
       messageBox.textContent = text;
       messageBox.style.color = type === "success" ? "green" : "red";
       setTimeout(() => (messageBox.textContent = ""), 3000);
     }
 
-    // Fetch tasks
+    // ✅ Fetch tasks
     async function fetchTasks() {
       try {
-        const res = await fetch(API_URL);
+        const res = await fetch(API_URL, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+
+        if (!res.ok) throw new Error("Unauthorized");
+
         const tasks = await res.json();
         taskCards.innerHTML = "";
 
         tasks.forEach((task) => {
           const card = document.createElement("div");
           card.className = `task-card ${task.done ? "done" : ""}`;
-
           card.innerHTML = `
-          <div class="task-header">
-            <h3>${task.title}</h3>
-            <span class="priority ${task.priority}">${task.priority || "low"}</span>
-          </div>
-          <p class="task-note">${task.note || ""}</p>
-          <div class="task-footer">
-            <span class="due-date">📅 ${task.dueDate || "No date"}</span>
-            <div class="actions">
-              <button class="done-btn" data-id="${task.id}" data-done="${task.done}">
-                ${task.done ? "✅ Done" : "☑️ Mark Done"}
-              </button>
-              <button class="delete-btn" data-id="${task.id}">🗑️ Delete</button>
+            <div class="task-header">
+              <h3>${task.title}</h3>
+              <span class="priority ${task.priority}">${task.priority || "low"}</span>
             </div>
-          </div>
-        `;
+            <p class="task-note">${task.note || ""}</p>
+            <div class="task-footer">
+              <span class="due-date">📅 ${task.dueDate || "No date"}</span>
+              <div class="actions">
+                <button class="done-btn" data-id="${task.id}" data-done="${task.done}">
+                  ${task.done ? "✅ Done" : "☑️ Mark Done"}
+                </button>
+                <button class="delete-btn" data-id="${task.id}">🗑️ Delete</button>
+              </div>
+            </div>
+          `;
           taskCards.appendChild(card);
         });
 
@@ -142,12 +172,15 @@
         document.querySelectorAll(".done-btn").forEach((btn) => {
           btn.addEventListener("click", async (e) => {
             const id = e.target.dataset.id;
-            const currentDone = e.target.dataset.done === "true"; // check current state
+            const currentDone = e.target.dataset.done === "true";
 
             await fetch(`${API_URL}/${id}`, {
               method: "PUT",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ done: !currentDone }), // toggle value
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`
+              },
+              body: JSON.stringify({ done: !currentDone }),
             });
 
             showMessage(!currentDone ? "Task marked as done ✅" : "Task marked as not done ❌");
@@ -159,17 +192,21 @@
         document.querySelectorAll(".delete-btn").forEach((btn) => {
           btn.addEventListener("click", async (e) => {
             const id = e.target.dataset.id;
-            await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+            await fetch(`${API_URL}/${id}`, {
+              method: "DELETE",
+              headers: { Authorization: `Bearer ${token}` }
+            });
             showMessage("Task deleted 🗑️");
             fetchTasks();
           });
         });
       } catch (err) {
         showMessage("Error loading tasks ❌", "error");
+        if (err.message.includes("Unauthorized")) logout();
       }
     }
 
-    // Add task
+    // ✅ Add task
     document.getElementById("taskForm").addEventListener("submit", async (e) => {
       e.preventDefault();
       const messageBox = document.getElementById("formMessage");
@@ -185,7 +222,10 @@
       try {
         const res = await fetch(API_URL, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`
+          },
           body: JSON.stringify(newTask),
         });
 
@@ -206,10 +246,8 @@
       }, 3000);
     });
 
-    // Load on page start
+    // ✅ Load tasks on start
     fetchTasks();
   </script>
-
 </body>
-
 </html>
