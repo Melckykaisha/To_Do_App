@@ -6,40 +6,161 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Calendar - FocusFlow</title>
   <link rel="stylesheet" href="style.css" />
+  <style>
+    .calendar-container {
+      background: white;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .calendar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .calendar-header button {
+      background: #d3bdf0;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 8px;
+    }
+
+    .calendar-day {
+      background: #f3e5f5;
+      border-radius: 8px;
+      padding: 10px;
+      min-height: 80px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      transition: transform 0.2s
+    }
+
+    .calendar-day:hover {
+      transform: scale(1.03);
+      background: #e1bee7;
+    }
+
+    .calendar-day.today {
+      background-color: #f0f7ff;
+      border-color: #a8d1ff;
+    }
+
+    .task-badge {
+      display: block;
+      font-size: 0.7rem;
+      padding: 2px 4px;
+      margin-top: 4px;
+      border-radius: 3px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .task-low {
+      background: #81c784;
+      /* green */
+    }
+
+    .task-medium {
+      background: #ffb74d;
+      /* orange */
+    }
+
+    .task-high {
+      background: #e57373;
+      /* red */
+    }
+
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .modal.hidden {
+      display: none;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      width: 90%;
+      max-width: 400px;
+    }
+
+    .close {
+      float: right;
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+
+    .message {
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 4px;
+      text-align: center;
+    }
+  </style>
 </head>
 
 <body class="calendar-page">
-  <!-- Top Bar -->
-  <div class="topbar">
-    <button class="toggle-btn">☰</button>
-    <h1>Calendar 🗓️</h1>
-  </div>
+  <div class="app-container">
+    <div class="topbar"><strong>FocusFlow – Calendar 🗓️</strong></div>
 
-  <!-- Overlay (for mobile) -->
-  <div class="overlay"></div>
+    <div class="page-content">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <nav>
+          <ul>
+            <li><a href="homepage.html">Home 🏠</a></li>
+            <li><a href="today.html">Today 🏷️</a></li>
+            <li><a href="upcoming.html">Upcoming 🚀</a></li>
+            <li><a href="calendar.html" class="active">Calendar 🗓️</a></li>
+          </ul>
+        </nav>
+        <button onclick="logout()">Logout</button>
+      </aside>
 
-  <div class="page-content">
-    <!-- Sidebar -->
-    <div class="sidebar">
-      <h2 class="logo">FocusFlow</h2>
-      <ul>
-        <li><a href="homepage.html">🏠 Homepage</a></li>
-        <li><a href="today.html">📌 Today</a></li>
-        <li><a href="upcoming.html">🚀 Upcoming</a></li>
-        <li><a href="calendar.html" class="active">🗓️ Calendar</a></li>
-      </ul>
-    </div>
+      <!-- Main Content -->
+      <main class="main-content">
+        <header class="header">
+          <div class="greeting" id="greetingText"></div>
+          <div class="username-box" id="username"></div>
+        </header>
 
-    <!-- Main Content -->
-    <div class="main-content">
-      <div class="calendar-container">
-        <div class="calendar-header">
-          <button id="prevMonth">⬅</button>
-          <h2 id="monthYear"></h2>
-          <button id="nextMonth">➡</button>
-        </div>
-        <div class="calendar-grid" id="calendarGrid"></div>
-      </div>
+        <!-- Feedback Messages -->
+        <div id="message" class="message"></div>
+
+        <!-- Calendar -->
+        <section class="calendar-container">
+          <div class="calendar-header">
+            <button id="prevMonth">⬅</button>
+            <h2 id="monthYear"></h2>
+            <button id="nextMonth">➡</button>
+          </div>
+          <div class="calendar-grid" id="calendarGrid"></div>
+        </section>
+      </main>
     </div>
   </div>
 
@@ -54,6 +175,10 @@
 
   <script>
     const API_URL = "http://localhost:3000/tasks";
+    const token = localStorage.getItem("token");
+    const messageBox = document.getElementById("message");
+    const usernameSpan = document.getElementById("username");
+    const greetingText = document.getElementById("greetingText");
     let currentDate = new Date();
 
     const monthYear = document.getElementById("monthYear");
@@ -63,13 +188,62 @@
     const taskList = document.getElementById("taskList");
     const closeModal = document.getElementById("closeModal");
 
-    // Fetch tasks
-    async function fetchTasks() {
-      const res = await fetch(API_URL);
-      return await res.json();
+    // ✅ Logout
+    function logout() {
+      localStorage.removeItem("token");
+      window.location.href = "login.html";
     }
 
-    // Render calendar
+    // ✅ Auth check + Greeting
+    async function checkAuth() {
+      if (!token) {
+        window.location.href = "login.html";
+        return;
+      }
+      try {
+        const payload = JSON.parse(atob(token.split(".")[1]));
+        usernameSpan.textContent = payload.username || "User";
+
+        // Greeting logic
+        const hours = new Date().getHours();
+        let greet = "Hello";
+        if (hours < 12) greet = "Good Morning 👋";
+        else if (hours < 18) greet = "Good Afternoon 👋";
+        else greet = "Good Evening 👋";
+
+        greetingText.textContent = greet;
+      } catch {
+        logout();
+      }
+    }
+
+    checkAuth();
+
+    // ✅ Show feedback messages
+    function showMessage(text, type = "success") {
+      messageBox.textContent = text;
+      messageBox.style.color = type === "success" ? "green" : "red";
+      setTimeout(() => (messageBox.textContent = ""), 3000);
+    }
+
+    // ✅ Fetch tasks with authentication
+    async function fetchTasks() {
+      try {
+        const res = await fetch(API_URL, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+
+        if (!res.ok) throw new Error("Unauthorized");
+
+        return await res.json();
+      } catch (err) {
+        showMessage("Error loading tasks ❌", "error");
+        if (err.message.includes("Unauthorized")) logout();
+        return [];
+      }
+    }
+
+    // ✅ Render calendar
     async function renderCalendar() {
       const tasks = await fetchTasks();
       const year = currentDate.getFullYear();
@@ -85,9 +259,19 @@
 
       calendarGrid.innerHTML = "";
 
+      // Day headers
+      const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      days.forEach(day => {
+        const dayHeader = document.createElement("div");
+        dayHeader.classList.add("calendar-day-header");
+        dayHeader.textContent = day;
+        calendarGrid.appendChild(dayHeader);
+      });
+
       // Empty cells before start
       for (let i = 0; i < firstDay; i++) {
         const empty = document.createElement("div");
+        empty.classList.add("calendar-day", "empty");
         calendarGrid.appendChild(empty);
       }
 
@@ -112,7 +296,7 @@
         // Task badges
         dayTasks.forEach((task) => {
           const span = document.createElement("span");
-          span.classList.add("task-badge", task.priority ? `task-${task.priority}` : "task-low");
+          span.classList.add("task-badge", `task-${task.priority || "low"}`);
           span.textContent = task.title;
           dayCell.appendChild(span);
         });
@@ -127,6 +311,10 @@
             dayTasks.forEach((task) => {
               const li = document.createElement("li");
               li.textContent = `${task.title} (${task.priority || "low"})`;
+              if (task.done) {
+                li.style.textDecoration = "line-through";
+                li.style.color = "#888";
+              }
               taskList.appendChild(li);
             });
           }
@@ -152,19 +340,11 @@
       taskModal.classList.add("hidden");
     });
 
-    // Sidebar toggle
-    const toggleBtn = document.querySelector(".toggle-btn");
-    const sidebar = document.querySelector(".sidebar");
-    const overlay = document.querySelector(".overlay");
-
-    toggleBtn.addEventListener("click", () => {
-      sidebar.classList.toggle("open");
-      overlay.classList.toggle("show");
-    });
-
-    overlay.addEventListener("click", () => {
-      sidebar.classList.remove("open");
-      overlay.classList.remove("show");
+    // Close modal when clicking outside
+    taskModal.addEventListener("click", (e) => {
+      if (e.target === taskModal) {
+        taskModal.classList.add("hidden");
+      }
     });
 
     // Load calendar

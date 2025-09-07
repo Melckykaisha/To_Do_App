@@ -1,4 +1,7 @@
-const API_URL = "http://localhost:3000"; // later, change when deployed
+// API configuration for both development and production
+const API_URL = window.location.hostname === "localhost" 
+  ? "http://localhost:3000" 
+  : "/api";
 
 // Utility: get today's date in YYYY-MM-DD format
 function getTodayDate() {
@@ -7,7 +10,12 @@ function getTodayDate() {
 
 // Get all tasks, but only those for today (used in today.html)
 export async function getTasks(filterToday = false) {
-  const res = await fetch(`${API_URL}/tasks`);
+  const token = localStorage.getItem("token");
+  const res = await fetch(`${API_URL}/tasks`, {
+    headers: {
+      "Authorization": `Bearer ${token}`
+    }
+  });
   const tasks = await res.json();
 
   if (filterToday) {
@@ -18,27 +26,35 @@ export async function getTasks(filterToday = false) {
 }
 
 // Create a new task, with today's date + priority if not provided
-export async function addTask(title, dueDate = null, priority = "Medium") {
+export async function addTask(title, dueDate = null, priority = "Medium", note = "") {
+  const token = localStorage.getItem("token");
   const today = getTodayDate();
   const res = await fetch(`${API_URL}/tasks`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { 
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`
+    },
     body: JSON.stringify({
       title,
       dueDate: dueDate || today,
-      priority,       // 👈 add priority
+      priority,
+      note,
       done: false,
     }),
   });
   return res.json();
 }
 
-
 // Update a task
 export async function updateTask(id, updates) {
+  const token = localStorage.getItem("token");
   const res = await fetch(`${API_URL}/tasks/${id}`, {
     method: "PUT",
-    headers: { "Content-Type": "application/json" },
+    headers: { 
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`
+    },
     body: JSON.stringify(updates),
   });
   return res.json();
@@ -46,5 +62,11 @@ export async function updateTask(id, updates) {
 
 // Delete a task
 export async function deleteTask(id) {
-  await fetch(`${API_URL}/tasks/${id}`, { method: "DELETE" });
+  const token = localStorage.getItem("token");
+  await fetch(`${API_URL}/tasks/${id}`, { 
+    method: "DELETE",
+    headers: {
+      "Authorization": `Bearer ${token}`
+    }
+  });
 }
