@@ -51,19 +51,17 @@ git clone https://github.com/Melckykaisha/To_Do_App.git
 cd To_Do_App
 
 
-2️⃣ Backend Setup (Node.js + Express)
-
-Navigate to backend folder:
+##Navigate to backend folder:
 
 cd focusflow-backend
 
 
-Install dependencies:
+##Install dependencies:
 
 npm install
 
 
-Run the backend server (with auto-reload using nodemon):
+##Run the backend server (with auto-reload using nodemon):
 
 npx nodemon index.js
 
